@@ -30,7 +30,9 @@ func NewUserRepository(database *mongo.Database) UserRepository {
 
 // Delete implements UserRepository.
 func (u *UserRepositoryImpl) Delete(ctx context.Context, id string) error {
-	panic("unimplemented")
+	filter := bson.D{{Key: "_id", Value: id}}
+	_, err := u.database.Collection(userCollection).DeleteOne(ctx, filter)
+	return err
 }
 
 // FindByEmail implements UserRepository.
