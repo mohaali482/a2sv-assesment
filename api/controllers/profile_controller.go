@@ -14,9 +14,9 @@ func NewProfileController(profileUseCase usecase.ProfileUsecase) *ProfileControl
 }
 
 func (p *ProfileController) Profile(c *gin.Context) {
-	id := c.Param("id")
+	userID := c.Value("user_id").(string)
 
-	user, err := p.profileUseCase.Profile(c.Request.Context(), id)
+	user, err := p.profileUseCase.Profile(c.Request.Context(), userID)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
