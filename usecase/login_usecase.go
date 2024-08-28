@@ -24,8 +24,12 @@ type LoginUseCaseImpl struct {
 	jwtService      infrastructure.JWTService
 }
 
-func NewLoginUseCaseImpl(repo repository.UserRepository) LoginUseCase {
-	return &LoginUseCaseImpl{repo: repo}
+func NewLoginUseCaseImpl(repo repository.UserRepository, passwordService infrastructure.PasswordService, jwtService infrastructure.JWTService) LoginUseCase {
+	return &LoginUseCaseImpl{
+		repo:            repo,
+		passwordService: passwordService,
+		jwtService:      jwtService,
+	}
 }
 
 // Login implements LoginUseCase.
