@@ -28,8 +28,13 @@ func (j *JWTServiceImpl) GenerateToken(user *domain.User) (*domain.Token, error)
 	accessTokenclaims := jwt.MapClaims{
 		"id":    user.ID,
 		"email": user.Email,
-		"role":  user.Role,
 		"type":  "access",
+	}
+
+	if user.IsAdmin() {
+		accessTokenclaims["role"] = "admin"
+	} else {
+		accessTokenclaims["role"] = "user"
 	}
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenclaims)
@@ -41,8 +46,13 @@ func (j *JWTServiceImpl) GenerateToken(user *domain.User) (*domain.Token, error)
 	refreshTokenclaims := jwt.MapClaims{
 		"id":    user.ID,
 		"email": user.Email,
-		"role":  user.Role,
 		"type":  "refresh",
+	}
+
+	if user.IsAdmin() {
+		refreshTokenclaims["role"] = "admin"
+	} else {
+		refreshTokenclaims["role"] = "user"
 	}
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenclaims)
