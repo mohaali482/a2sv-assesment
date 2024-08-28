@@ -37,9 +37,10 @@ func newMongoClient() *mongo.Client {
 
 func main() {
 	db := newMongoClient()
+	mongoDatabase := db.Database(os.Getenv("MONGO_DB"))
 
 	r := gin.New()
-	routes.Setup(db.Database(os.Getenv("MONGODB_DB")), r)
+	routes.Setup(mongoDatabase, r)
 
-	r.Run("localhost:8080")
+	r.Run("localhost:8000")
 }

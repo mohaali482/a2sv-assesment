@@ -28,8 +28,16 @@ type RegisterUseCaseImpl struct {
 	verificationService infrastructure.VerificationService
 }
 
-func NewRegisterUseCaseImpl(repo repository.UserRepository, passwordService infrastructure.PasswordService) RegisterUseCase {
-	return &RegisterUseCaseImpl{repo: repo, passwordService: passwordService}
+func NewRegisterUseCaseImpl(repo repository.UserRepository,
+	passwordService infrastructure.PasswordService,
+	emailService infrastructure.EmailService,
+	verificationService infrastructure.VerificationService) RegisterUseCase {
+	return &RegisterUseCaseImpl{
+		repo:                repo,
+		passwordService:     passwordService,
+		emailService:        emailService,
+		verificationService: verificationService,
+	}
 }
 
 // Register implements RegisterUseCase.
