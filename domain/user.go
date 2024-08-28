@@ -1,9 +1,13 @@
 package domain
 
+import "errors"
+
 const (
 	RoleAdmin = iota
 	RoleUser
 )
+
+var ErrUserNotFound = errors.New("user not found")
 
 type User struct {
 	ID       string `json:"id" bson:"_id"`
