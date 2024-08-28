@@ -1,12 +1,17 @@
 package infrastructure
 
 import (
+	"errors"
+
 	"github.com/golang-jwt/jwt"
 	"github.com/mohaali482/a2sv-assesment/domain"
 )
 
+var ErrInvalidToken = errors.New("invalid token")
+
 type JWTService interface {
 	GenerateToken(user *domain.User) (*domain.Token, error)
+	GenerateAccess(claims jwt.MapClaims) (string, error)
 	ValidateToken(token string) (map[string]interface{}, error)
 }
 
@@ -63,4 +68,22 @@ func (j *JWTServiceImpl) ValidateToken(token string) (map[string]interface{}, er
 	}
 
 	return claims, nil
+}
+
+// GenerateAccess implements JWTService.
+func (j *JWTServiceImpl) GenerateAccess(claims jwt.MapClaims) (string, error) {
+	accessTokenclaims := jwt.MapClaims{
+		"id":    claims["id"],
+		"email": claims["email"],
+		"role":  claims["role"],
+		"type":  "access",
+	}
+
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenclaims)
+	accessTokenString, err := accessToken.SignedString([]byte(j.secretKey))
+	if err != nil {
+		return "", err
+	}
+
+	return accessTokenString, nil
 }
