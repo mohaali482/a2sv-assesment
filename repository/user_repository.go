@@ -40,7 +40,15 @@ func (u *UserRepositoryImpl) FindByEmail(ctx context.Context, email string) (*do
 
 // FindByID implements UserRepository.
 func (u *UserRepositoryImpl) FindByID(ctx context.Context, id string) (*domain.User, error) {
-	panic("unimplemented")
+	filter := bson.D{{Key: "_id", Value: id}}
+	var user domain.User
+	err := u.database.Collection(userCollection).FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+
 }
 
 // GetUsers implements UserRepository.
