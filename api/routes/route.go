@@ -21,13 +21,20 @@ func Setup(db *mongo.Database, gin *gin.Engine) {
 	NewRefreshRoute(publicRoutes)
 	NewPasswordRoute(db, publicRoutes)
 
-	privateRoutes := gin.Group("users")
+	privateRoutes := gin.Group("")
 	privateRoutes.Use(middleware.AuthMiddleware())
-	NewProfileRoute(db, privateRoutes)
 
-	adminRoutes := gin.Group("admin")
+	usersRoutes := privateRoutes.Group("users")
+	NewProfileRoute(db, usersRoutes)
+
+	bookRequestsRoutes := privateRoutes.Group("books/borrow")
+	NewBookRequestRoute(db, bookRequestsRoutes)
+
+	adminRoutes := gin.Group("/admin")
 	adminRoutes.Use(middleware.AuthMiddleware())
 	adminRoutes.Use(middleware.AdminMiddleware())
 	NewUserRoute(db, adminRoutes)
 
+	adminBookRequestRoutes := adminRoutes.Group("/borrows")
+	NewBookRequestAdminRoute(db, adminBookRequestRoutes)
 }
