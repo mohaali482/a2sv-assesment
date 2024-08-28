@@ -48,6 +48,11 @@ func (r *RegisterUseCaseImpl) Register(ctx context.Context, form RegisterForm) e
 		return err
 	}
 
+	exisitingUser, err := r.repo.FindByEmail(ctx, form.Email)
+	if err == nil && exisitingUser != nil {
+		return domain.ErrEmailAlreadyExists
+	}
+
 	user := &domain.User{
 		FullName: form.FullName,
 		Email:    form.Email,

@@ -16,5 +16,5 @@ func NewRefreshRoute(group *gin.RouterGroup) {
 		usecase.NewRefreshUseCaseImpl(js),
 	)
 
-	group.POST("/refresh", rc.Refresh)
+	group.POST("/token/refresh", rc.Refresh)
 }

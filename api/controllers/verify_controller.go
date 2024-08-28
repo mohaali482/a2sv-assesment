@@ -15,7 +15,7 @@ func NewVerifyController(verifyUseCase usecase.VerifyUseCase) *VerifyController 
 
 func (v *VerifyController) Verify(c *gin.Context) {
 	userID := c.Param("id")
-	token := c.Query("token")
+	token := c.Param("token")
 
 	err := v.verifyUseCase.Verify(c.Request.Context(), userID, token)
 	if err != nil {

@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"crypto/sha1"
+	"encoding/base64"
 
 	"github.com/mohaali482/a2sv-assesment/domain"
 )
@@ -25,5 +26,6 @@ func (v *VerificationServiceImpl) GenerateToken(user *domain.User) (string, erro
 	}
 
 	tokenString := string(token.Sum(nil))
+	tokenString = base64.URLEncoding.EncodeToString([]byte(tokenString))
 	return tokenString, nil
 }

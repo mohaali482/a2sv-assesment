@@ -2,7 +2,9 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/mohaali482/a2sv-assesment/domain"
 	"github.com/mohaali482/a2sv-assesment/infrastructure"
 	"github.com/mohaali482/a2sv-assesment/repository"
@@ -13,8 +15,8 @@ type PasswordResetForm struct {
 }
 
 type PasswordUpdateForm struct {
-	Password    string `json:"password" validate:"required"`
-	NewPassword string `json:"new_password" validate:"required"`
+	NewPassword     string `json:"new_password" validate:"required"`
+	ConfirmPassword string `json:"confirm_password" validate:"required"`
 }
 
 type PasswordResetUseCase interface {
@@ -45,6 +47,12 @@ func NewPasswordResetUseCaseImpl(
 
 // PasswordReset implements PasswordResetUseCase.
 func (p *PasswordResetUseCaseImpl) PasswordReset(ctx context.Context, form PasswordResetForm) error {
+	validate := validator.New()
+	err := infrastructure.Validate(validate, form)
+	if err != nil {
+		return err
+	}
+
 	user, err := p.repo.FindByEmail(ctx, form.Email)
 	if err != nil {
 		return err
@@ -55,7 +63,7 @@ func (p *PasswordResetUseCaseImpl) PasswordReset(ctx context.Context, form Passw
 		return err
 	}
 
-	passwordResetLink := "http://localhost:8080/users/password-update?id=" + user.ID + "&token=" + token
+	passwordResetLink := "http://localhost:8000/users/password-update?id=" + user.ID + "&token=" + token
 
 	err = p.emailService.Send(user.Email, "Password Reset", passwordResetLink)
 	if err != nil {
@@ -67,6 +75,16 @@ func (p *PasswordResetUseCaseImpl) PasswordReset(ctx context.Context, form Passw
 
 // PasswordUpdate implements PasswordResetUseCase.
 func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, id, token string, form PasswordUpdateForm) error {
+	validator := validator.New()
+	err := infrastructure.Validate(validator, form)
+	if err != nil {
+		return err
+	}
+
+	if form.NewPassword != form.ConfirmPassword {
+		return errors.New("passwords do not match")
+	}
+
 	user, err := p.repo.FindByID(ctx, id)
 	if err != nil {
 		return err
@@ -81,7 +99,7 @@ func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, id, token
 		return domain.ErrInvalidVerificationCode
 	}
 
-	hashedPassword, err := p.passwordService.Hash(form.Password)
+	hashedPassword, err := p.passwordService.Hash(form.NewPassword)
 	if err != nil {
 		return err
 	}

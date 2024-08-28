@@ -45,5 +45,7 @@ func (r *RefreshController) Refresh(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, token)
+	c.JSON(200, gin.H{
+		"access": token,
+	})
 }
