@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"crypto/sha1"
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
@@ -23,9 +22,10 @@ type RegisterUseCase interface {
 }
 
 type RegisterUseCaseImpl struct {
-	repo            repository.UserRepository
-	passwordService infrastructure.PasswordService
-	emailService    infrastructure.EmailService
+	repo                repository.UserRepository
+	passwordService     infrastructure.PasswordService
+	emailService        infrastructure.EmailService
+	verificationService infrastructure.VerificationService
 }
 
 func NewRegisterUseCaseImpl(repo repository.UserRepository, passwordService infrastructure.PasswordService) RegisterUseCase {
@@ -71,13 +71,10 @@ func (r *RegisterUseCaseImpl) Register(ctx context.Context, form RegisterForm) e
 
 // GenerateVerificationLink implements RegisterUseCase.
 func (r *RegisterUseCaseImpl) GenerateVerificationLink(ctx context.Context, user *domain.User) (string, error) {
-	token := sha1.New()
-	_, err := token.Write([]byte(user.Email + user.Password))
+	tokenString, err := r.verificationService.GenerateToken(user)
 	if err != nil {
 		return "", err
 	}
-
-	tokenString := string(token.Sum(nil))
 
 	return fmt.Sprintf("http://localhost:8000/users/verify/%s/%s", user.ID, tokenString), nil
 }
