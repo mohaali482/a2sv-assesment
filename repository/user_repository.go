@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mohaali482/a2sv-assesment/domain"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -56,5 +57,16 @@ func (u *UserRepositoryImpl) Insert(ctx context.Context, user *domain.User) erro
 
 // Update implements UserRepository.
 func (u *UserRepositoryImpl) Update(ctx context.Context, user *domain.User) error {
-	panic("unimplemented")
+	filter := bson.D{{Key: "_id", Value: user.ID}}
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "email", Value: user.Email},
+			{Key: "password", Value: user.Password},
+			{Key: "full_name", Value: user.FullName},
+			{Key: "role", Value: user.Role},
+		}},
+	}
+
+	_, err := u.database.Collection(userCollection).UpdateOne(ctx, filter, update)
+	return err
 }
