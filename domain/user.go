@@ -15,6 +15,7 @@ type User struct {
 	Password string `json:"password" bson:"password"`
 	FullName string `json:"full_name" bson:"full_name"`
 	Role     int    `json:"role" bson:"role"`
+	Verified bool   `json:"verified" bson:"verified"`
 }
 
 func (u *User) IsAdmin() bool {
