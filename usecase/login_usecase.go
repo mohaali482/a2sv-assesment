@@ -37,6 +37,10 @@ func (l *LoginUseCaseImpl) Login(ctx context.Context, form LoginForm) (*domain.T
 	}
 
 	user, err := l.repo.FindByEmail(ctx, form.Email)
+	if err != nil {
+		return nil, err
+	}
+
 	if !user.Verified {
 		return nil, domain.ErrUserNotVerified
 	}
