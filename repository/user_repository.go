@@ -45,7 +45,17 @@ func (u *UserRepositoryImpl) FindByID(ctx context.Context, id string) (*domain.U
 
 // GetUsers implements UserRepository.
 func (u *UserRepositoryImpl) GetUsers(ctx context.Context) ([]*domain.User, error) {
-	panic("unimplemented")
+	cursor, err := u.database.Collection(userCollection).Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*domain.User
+	if err = cursor.All(ctx, &users); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 // Insert implements UserRepository.
