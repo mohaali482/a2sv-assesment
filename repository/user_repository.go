@@ -35,7 +35,14 @@ func (u *UserRepositoryImpl) Delete(ctx context.Context, id string) error {
 
 // FindByEmail implements UserRepository.
 func (u *UserRepositoryImpl) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
-	panic("unimplemented")
+	filter := bson.D{{Key: "email", Value: email}}
+	var user domain.User
+	err := u.database.Collection(userCollection).FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 // FindByID implements UserRepository.
