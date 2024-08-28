@@ -49,12 +49,12 @@ func (l *LoginUseCaseImpl) Login(ctx context.Context, form LoginForm) (*domain.T
 	}
 
 	if !user.Verified {
-		log.Default().Println("User is not verified")
+		log.Default().Println("User is not verified. Email:", user.Email)
 		return nil, domain.ErrUserNotVerified
 	}
 
 	if !l.passwordService.Compare(user.Password, form.Password) {
-		log.Default().Println("Invalid credentials")
+		log.Default().Println("Invalid credentials from user with email of", user.Email)
 		return nil, domain.ErrInvalidCredentials
 	}
 

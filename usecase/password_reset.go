@@ -71,6 +71,7 @@ func (p *PasswordResetUseCaseImpl) PasswordReset(ctx context.Context, form Passw
 		return err
 	}
 
+	log.Default().Println("User with the email of", user.Email, "requested for reset password")
 	return nil
 }
 
@@ -111,6 +112,6 @@ func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, id, token
 		return err
 	}
 
-	log.Default().Println("Password updated successfully")
+	log.Default().Println("User with the email of", user.Email, "reseted password successfully")
 	return nil
 }
