@@ -13,14 +13,13 @@ type PasswordResetForm struct {
 }
 
 type PasswordUpdateForm struct {
-	ID          string `json:"id" validate:"required"`
 	Password    string `json:"password" validate:"required"`
 	NewPassword string `json:"new_password" validate:"required"`
 }
 
 type PasswordResetUseCase interface {
 	PasswordReset(ctx context.Context, form PasswordResetForm) error
-	PasswordUpdate(ctx context.Context, form PasswordUpdateForm) error
+	PasswordUpdate(ctx context.Context, id string, form PasswordUpdateForm) error
 }
 
 type PasswordResetUseCaseImpl struct {
@@ -67,8 +66,8 @@ func (p *PasswordResetUseCaseImpl) PasswordReset(ctx context.Context, form Passw
 }
 
 // PasswordUpdate implements PasswordResetUseCase.
-func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, form PasswordUpdateForm) error {
-	user, err := p.repo.FindByID(ctx, form.ID)
+func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, id string, form PasswordUpdateForm) error {
+	user, err := p.repo.FindByID(ctx, id)
 	if err != nil {
 		return err
 	}
