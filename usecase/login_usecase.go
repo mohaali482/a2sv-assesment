@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mohaali482/a2sv-assesment/domain"
@@ -37,26 +38,32 @@ func (l *LoginUseCaseImpl) Login(ctx context.Context, form LoginForm) (*domain.T
 	validate := validator.New()
 	err := infrastructure.Validate(validate, form)
 	if err != nil {
+		log.Default().Println("Invalid form:", err)
 		return nil, err
 	}
 
 	user, err := l.repo.FindByEmail(ctx, form.Email)
 	if err != nil {
+		log.Default().Println("Failed to find user by email:", err)
 		return nil, err
 	}
 
 	if !user.Verified {
+		log.Default().Println("User is not verified")
 		return nil, domain.ErrUserNotVerified
 	}
 
 	if !l.passwordService.Compare(user.Password, form.Password) {
+		log.Default().Println("Invalid credentials")
 		return nil, domain.ErrInvalidCredentials
 	}
 
 	token, err := l.jwtService.GenerateToken(user)
 	if err != nil {
+		log.Default().Println("Failed to generate token:", err)
 		return nil, err
 	}
 
+	log.Default().Println("User with email:", user.Email, "successfully logged in")
 	return token, nil
 }
