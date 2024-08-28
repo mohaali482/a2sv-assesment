@@ -19,7 +19,7 @@ type PasswordUpdateForm struct {
 
 type PasswordResetUseCase interface {
 	PasswordReset(ctx context.Context, form PasswordResetForm) error
-	PasswordUpdate(ctx context.Context, id string, form PasswordUpdateForm) error
+	PasswordUpdate(ctx context.Context, id, token string, form PasswordUpdateForm) error
 }
 
 type PasswordResetUseCaseImpl struct {
@@ -66,7 +66,7 @@ func (p *PasswordResetUseCaseImpl) PasswordReset(ctx context.Context, form Passw
 }
 
 // PasswordUpdate implements PasswordResetUseCase.
-func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, id string, form PasswordUpdateForm) error {
+func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, id, token string, form PasswordUpdateForm) error {
 	user, err := p.repo.FindByID(ctx, id)
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, id string
 		return err
 	}
 
-	if expectedToken != form.NewPassword {
+	if expectedToken != token {
 		return domain.ErrInvalidVerificationCode
 	}
 
