@@ -1,0 +1,45 @@
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"github.com/mohaali482/a2sv-assesment/api/routes"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func newMongoClient() *mongo.Client {
+	clientOptions := options.Client().ApplyURI(os.Getenv("MONGODB_URI"))
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return client
+}
+
+func main() {
+	db := newMongoClient()
+
+	r := gin.New()
+	routes.Setup(db.Database(os.Getenv("MONGODB_DB")), r)
+
+	r.Run("localhost:8080")
+}
