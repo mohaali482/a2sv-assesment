@@ -2,12 +2,16 @@ package infrastructure
 
 import (
 	"errors"
+	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/mohaali482/a2sv-assesment/domain"
 )
 
 var ErrInvalidToken = errors.New("invalid token")
+
+const AccessTokenDuration = 15 * time.Minute
+const RefreshTokenDuration = 7 * 24 * time.Hour
 
 type JWTService interface {
 	GenerateToken(user *domain.User) (*domain.Token, error)
@@ -29,6 +33,7 @@ func (j *JWTServiceImpl) GenerateToken(user *domain.User) (*domain.Token, error)
 		"id":    user.ID,
 		"email": user.Email,
 		"type":  "access",
+		"exp":   jwt.TimeFunc().Add(AccessTokenDuration).Unix(),
 	}
 
 	if user.IsAdmin() {
@@ -47,6 +52,7 @@ func (j *JWTServiceImpl) GenerateToken(user *domain.User) (*domain.Token, error)
 		"id":    user.ID,
 		"email": user.Email,
 		"type":  "refresh",
+		"exp":   jwt.TimeFunc().Add(RefreshTokenDuration).Unix(),
 	}
 
 	if user.IsAdmin() {
@@ -87,6 +93,7 @@ func (j *JWTServiceImpl) GenerateAccess(claims jwt.MapClaims) (string, error) {
 		"email": claims["email"],
 		"role":  claims["role"],
 		"type":  "access",
+		"exp":   jwt.TimeFunc().Add(AccessTokenDuration).Unix(),
 	}
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenclaims)
