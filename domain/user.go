@@ -10,6 +10,7 @@ const (
 var ErrUserNotFound = errors.New("user not found")
 var ErrUserNotVerified = errors.New("user not verified")
 var ErrInvalidCredentials = errors.New("invalid credentials")
+var ErrInvalidVerificationCode = errors.New("invalid verification code")
 
 type User struct {
 	ID       string `json:"id" bson:"_id"`
