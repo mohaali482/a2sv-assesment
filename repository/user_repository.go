@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log"
 
 	"github.com/mohaali482/a2sv-assesment/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,7 +32,11 @@ func NewUserRepository(database *mongo.Database) UserRepository {
 // Delete implements UserRepository.
 func (u *UserRepositoryImpl) Delete(ctx context.Context, id string) error {
 	filter := bson.D{{Key: "_id", Value: id}}
-	_, err := u.database.Collection(userCollection).DeleteOne(ctx, filter)
+	result, err := u.database.Collection(userCollection).DeleteOne(ctx, filter)
+	if result.DeletedCount == 0 {
+		return domain.ErrUserNotFound
+	}
+
 	return err
 }
 
@@ -41,6 +46,10 @@ func (u *UserRepositoryImpl) FindByEmail(ctx context.Context, email string) (*do
 	var user domain.User
 	err := u.database.Collection(userCollection).FindOne(ctx, filter).Decode(&user)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, domain.ErrUserNotFound
+		}
+
 		return nil, err
 	}
 
@@ -53,6 +62,10 @@ func (u *UserRepositoryImpl) FindByID(ctx context.Context, id string) (*domain.U
 	var user domain.User
 	err := u.database.Collection(userCollection).FindOne(ctx, filter).Decode(&user)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, domain.ErrUserNotFound
+		}
+
 		return nil, err
 	}
 
@@ -94,6 +107,15 @@ func (u *UserRepositoryImpl) Update(ctx context.Context, user *domain.User) erro
 		}},
 	}
 
-	_, err := u.database.Collection(userCollection).UpdateOne(ctx, filter, update)
-	return err
+	result, err := u.database.Collection(userCollection).UpdateOne(ctx, filter, update)
+	if result.MatchedCount == 0 {
+		return domain.ErrUserNotFound
+	}
+
+	if err != nil {
+		log.Default().Println("Error updating user in repository:", err)
+		return err
+	}
+
+	return nil
 }
