@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mohaali482/a2sv-assesment/domain"
@@ -110,5 +111,6 @@ func (p *PasswordResetUseCaseImpl) PasswordUpdate(ctx context.Context, id, token
 		return err
 	}
 
+	log.Default().Println("Password updated successfully")
 	return nil
 }
