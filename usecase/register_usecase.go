@@ -76,5 +76,5 @@ func (r *RegisterUseCaseImpl) GenerateVerificationLink(ctx context.Context, user
 		return "", err
 	}
 
-	return fmt.Sprintf("http://localhost:8000/users/verify/%s/%s", user.ID, tokenString), nil
+	return fmt.Sprintf("http://localhost:8000/users/verify-email/%s/%s", user.ID, tokenString), nil
 }
