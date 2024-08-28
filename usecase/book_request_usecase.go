@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mohaali482/a2sv-assesment/domain"
@@ -61,6 +62,7 @@ func (b *BookRequestUseCaseImpl) AddBorrowRequest(ctx context.Context, userID st
 		return nil, err
 	}
 
+	log.Default().Println("User with id of", userID, "requested for book with id of", form.BookID)
 	return request, nil
 }
 

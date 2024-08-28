@@ -60,6 +60,7 @@ func (r *BookRequestRepositoryImpl) UpdateBorrowRequest(ctx context.Context, req
 		return err
 	}
 
+	log.Default().Println("Book request with id of", request.ID, "status changed to", request.Status)
 	return err
 }
 

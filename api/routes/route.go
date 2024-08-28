@@ -37,4 +37,6 @@ func Setup(db *mongo.Database, gin *gin.Engine) {
 
 	adminBookRequestRoutes := adminRoutes.Group("/borrows")
 	NewBookRequestAdminRoute(db, adminBookRequestRoutes)
+
+	NewLogRoute(adminRoutes)
 }
