@@ -17,5 +17,5 @@ func NewVerifyRoute(db *mongo.Database, group *gin.RouterGroup) {
 		usecase.NewVerifyUseCaseImpl(ur, vs),
 	)
 
-	group.POST("/verify-email", vc.Verify)
+	group.GET("/verify-email/:id/:token", vc.Verify)
 }

@@ -104,6 +104,7 @@ func (u *UserRepositoryImpl) Update(ctx context.Context, user *domain.User) erro
 			{Key: "password", Value: user.Password},
 			{Key: "full_name", Value: user.FullName},
 			{Key: "role", Value: user.Role},
+			{Key: "verified", Value: user.Verified},
 		}},
 	}
 

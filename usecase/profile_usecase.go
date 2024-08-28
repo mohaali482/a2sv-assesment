@@ -26,6 +26,7 @@ func (p *ProfileUsecaseImpl) Profile(ctx context.Context, id string) (*domain.Us
 	if err != nil {
 		return nil, err
 	}
+	user.Password = ""
 
 	return user, nil
 }

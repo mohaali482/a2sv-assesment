@@ -14,6 +14,6 @@ func NewUserRoute(db *mongo.Database, group *gin.RouterGroup) {
 		usecase.NewUserUsecaseImpl(ur),
 	)
 
-	group.POST("/users", uc.GetUsers)
+	group.GET("/users", uc.GetUsers)
 	group.DELETE("/users/:id", uc.DeleteUser)
 }
